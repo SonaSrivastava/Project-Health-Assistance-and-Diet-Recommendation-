@@ -60,7 +60,7 @@ col3.metric("TDEE",f"{tdee} kcal")
 col4.metric("Calorie Target",f"{calories} kcal")
 
 tab1,tab2= st.tabs(["Diet Recommandation","Health Assitance"])
-if tab1:
+with tab1:
     if st.button("Recommend Diet"):
         if client:
             with st.spinner("Creating Diet..."):
@@ -216,14 +216,15 @@ IMPORTANT RULES:
                     st.markdown(answer)
                 except:
                     st.error("RAG is not connected")
-elif tab2:
+with tab2:
     question=st.text_area("Ask About Heahth",
                  placeholder="eg.:Good Source of vegetatian protein")
     if st.button("Ask AI"):
-        db=load_rag()
-        docs=db.similarity_search(question,3)
-        context="\n\n".join([doc.page_content for doc in docs])
-        prompt=f"""You are an AI health and nutrition
+        with st.spinner("Thinking..")
+            db=load_rag()
+            docs=db.similarity_search(question,3)
+            context="\n\n".join([doc.page_content for doc in docs])
+            prompt=f"""You are an AI health and nutrition
 
 assistant.
 Use the following knowledge to answer
@@ -251,7 +252,7 @@ and wellness purposes."""
                     messages=[{"role":"user",
                                "content":prompt}]
                 )
-        answer=responce.choice[0].message.content
+        answer=responce.choices[0].message.content
         st.markdown(answer)
         
         
